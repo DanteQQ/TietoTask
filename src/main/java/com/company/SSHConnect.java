@@ -6,14 +6,11 @@ import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.connection.channel.direct.Session.Command;
 import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
 
-import java.io.Console;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 public class SSHConnect {
-    private static final Console myConsole = System.console();
 
-    public static void sshConnect(String username, String password, String address) throws IOException {
+    public static void sshConnect(String username, String password, String address, String command) throws IOException {
             final SSHClient ssh = new SSHClient();
             ssh.addHostKeyVerifier(new PromiscuousVerifier());
             ssh.connect(address);
@@ -21,19 +18,17 @@ public class SSHConnect {
             try {
                 ssh.authPassword(username, password);
                 session = ssh.startSession();
-                final Command cmd = session.exec("ping -c 1 google.com");
-                myConsole.writer().print(IOUtils.readFully(cmd.getInputStream()).toString());
-                cmd.join(5, TimeUnit.SECONDS);
-                myConsole.writer().print("\n** exit status: " + cmd.getExitStatus());
+                final Command cmd = session.exec(command);
+                System.out.println(IOUtils.readFully(cmd.getInputStream()).toString());
+                System.out.println("\nExit status: " + cmd.getExitStatus());
             } finally {
                 try {
                     if (session != null) {
                         session.close();
                     }
                 } catch (IOException e) {
-                    // Do Nothing
+                    e.printStackTrace();
                 }
-
                 ssh.disconnect();
             }
     }

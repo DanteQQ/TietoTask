@@ -4,17 +4,26 @@ import org.apache.commons.validator.routines.InetAddressValidator;
 
 import java.io.IOException;
 
-public class Main {
+/**
+ * This application connects to device using address, username
+ * and password and executes command.
+ */
+public class SSHExec {
 
     private static String user;
     private static String password;
     private static String host;
     private static String command;
 
+    /**
+     * Main method. Uses parameters to call method for ssh connection.
+     * @param args Input parameters in format username, password, host address, "command".
+     * @return Nothing.
+     */
     public static void main(String[] args) {
 
         if(args.length != 4) {
-            System.out.println("Proper parameters are: username, password, host address, command");
+            System.out.println("Proper parameters are: username, password, host address, \"command\"");
             System.exit(0);
         }
 
@@ -30,11 +39,9 @@ public class Main {
         command = args[3];
 
         try {
-            SSHConnect.sshConnect(user, password, host, command);
+            SSHConnect.sshConnectAndExecute(user, password, host, command);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-
 }
